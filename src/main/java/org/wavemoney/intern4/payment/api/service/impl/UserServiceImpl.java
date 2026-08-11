@@ -9,6 +9,8 @@ import org.wavemoney.intern4.payment.api.entity.User;
 import org.wavemoney.intern4.payment.api.repo.UserRepository;
 import org.wavemoney.intern4.payment.api.service.UserService;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -21,7 +23,7 @@ public class UserServiceImpl implements UserService {
         User user = mapDtoToEntity(userRequest);
 
         // to DB
-        User savedUser = userRepo.createUser(user);
+        User savedUser = userRepo.save(user);
 
         // Entity to DTO Mapping
         UserResponse userResponse = mapEntitytoDto(savedUser);
@@ -30,19 +32,22 @@ public class UserServiceImpl implements UserService {
     }
 
     private User mapDtoToEntity(UserRequest userRequest) {
-        User user = new User();
-        user.setId("123");
-        user.setUsername(userRequest.getUsername());
-        user.setPassword(userRequest.getPassword());
-        user.setAge(userRequest.getAge());
-
+        User user = User.builder()
+                .id(UUID.randomUUID().toString())
+                .name(userRequest.getName())
+                .phone(userRequest.getPhone())
+                .pin(userRequest.getPin())
+                .nrc(userRequest.getNrc())
+                .build();
         return user;
     }
 
     private UserResponse mapEntitytoDto(User user) {
-        UserResponse userResponse = new UserResponse();
-        userResponse.setUsername(user.getUsername());
-        userResponse.setAge(user.getAge());
+        UserResponse userResponse = UserResponse.builder()
+                .name(user.getName())
+                .level(user.getLevel())
+                .phone(user.getPhone())
+                .build();
 
         return userResponse;
     }

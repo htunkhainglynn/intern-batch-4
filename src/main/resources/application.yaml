@@ -1,5 +1,15 @@
 spring:
   application:
     name: payment
+  mongodb:
+    uri: mongodb://admin:password@bore.pub:28017/payment?authSource=admin
+
 server:
   port: 8081
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.springframework.cache: TRACE
+    org.wavemoney.payment: DEBUG

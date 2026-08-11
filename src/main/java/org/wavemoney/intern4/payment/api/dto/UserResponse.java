@@ -1,13 +1,16 @@
 package org.wavemoney.intern4.payment.api.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserResponse {
-    String username;
-    int age;
+    String name;
+    String phone;
+    String level;
 }
