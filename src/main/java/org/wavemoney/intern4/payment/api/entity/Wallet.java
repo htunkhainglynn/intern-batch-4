@@ -10,22 +10,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "users")
-public class User {
+@Document(collection="wallets")
+@NoArgsConstructor
+@Builder
+public class Wallet {
 
     @Id
+    private String walletId;
     private String userId;
-    private String name;
     private String phone;
-    private String nrc;
-    private String pin;
+    private Double balance;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;
     private String updatedBy;
-    @Builder.Default
-    private String level = "1";
 }

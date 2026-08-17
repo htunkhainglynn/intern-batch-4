@@ -7,6 +7,16 @@ spring:
 server:
   port: 8081
 
+transaction-amount:
+  min: 1
+  max: 300000
+
+wallet-limit: 10000000
+
+jwt:
+  secret: ${JWT_SECRET:asjkdwuet2y56924ihu28u886^&*892rjku2yrj4r%jhgfiefuiwriunc^fuiwhjfnwdwu27489hjIYU^9867HY%}
+  expiration-ms: 3600000
+
 logging:
   level:
     root: INFO

@@ -1,4 +1,4 @@
-package org.wavemoney.intern4.payment.api.dto;
+package org.wavemoney.intern4.payment.api.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class ProductResponse {
-
-    String id;
-    String name;
-    double price;
+public class WalletRequest {
+    private String phone;
 }
