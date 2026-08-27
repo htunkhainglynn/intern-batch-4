@@ -12,6 +12,13 @@ import lombok.NoArgsConstructor;
 public class UserResponse {
     String name;
     String phone;
+    String nrc;
+    String address;
+    String dateOfBirth;
+    String gender;
+    String nationality;
+    String occupation;
     String level;
     String walletStatus;
+    String kycStatus;
 }

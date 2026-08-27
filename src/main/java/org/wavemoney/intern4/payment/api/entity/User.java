@@ -18,14 +18,27 @@ public class User {
 
     @Id
     private String userId;
+
     private String name;
     private String phone;
     private String nrc;
     private String pin;
+
+    // KYC information
+    private String address;
+    private String dateOfBirth;
+    private String gender;
+    private String nationality;
+    private String occupation;
+
+    // KYC status
+    private String kycStatus = "NOT SUBMITTED";
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;
     private String updatedBy;
+
     @Builder.Default
     private String level = "1";
 }

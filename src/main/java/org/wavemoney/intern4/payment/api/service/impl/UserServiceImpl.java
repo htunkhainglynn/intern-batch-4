@@ -1,15 +1,16 @@
 package org.wavemoney.intern4.payment.api.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.wavemoney.intern4.payment.api.dto.request.PinUpdateRequest;
-import org.wavemoney.intern4.payment.api.dto.request.UpdateUserRequest;
-import org.wavemoney.intern4.payment.api.dto.request.UserRequest;
-import org.wavemoney.intern4.payment.api.dto.request.WalletRequest;
+import org.springframework.web.server.ResponseStatusException;
+import org.wavemoney.intern4.payment.api.dto.request.*;
 import org.wavemoney.intern4.payment.api.dto.response.LoginResponse;
 import org.wavemoney.intern4.payment.api.dto.response.UserResponse;
 import org.wavemoney.intern4.payment.api.dto.response.WalletResponse;
 import org.wavemoney.intern4.payment.api.entity.User;
+import org.wavemoney.intern4.payment.api.enums.KycStatus;
+import org.wavemoney.intern4.payment.api.enums.WalletStatus;
 import org.wavemoney.intern4.payment.api.repo.UserRepository;
 import org.wavemoney.intern4.payment.api.config.security.JwtService;
 import org.wavemoney.intern4.payment.api.config.security.TokenService;
@@ -65,19 +66,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserByPhone(String phone) {
-        Optional<User> optionalUser = userRepo.findByPhone(phone);
+        User user = userRepo.findByPhone(phone)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"
+                ));
 
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("user not found");
-        }
-
-        // Entity → DTO
-        return mapEntityToDto(optionalUser.get());
+        return mapEntityToDto(user);
     }
 
     @Override
-    public UserResponse updateUser(UpdateUserRequest updateUserRequest) {
-        Optional<User> optionalUser = userRepo.findByPhone(updateUserRequest.getPhone());
+    public UserResponse updateUser(String phone, KYCFormRequest kycFormRequest) {
+        Optional<User> optionalUser = userRepo.findByPhone(phone);
 
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("user not found");
@@ -85,16 +83,11 @@ public class UserServiceImpl implements UserService {
 
         User user = optionalUser.get();
 
-        // DTO → Entity
-        User userToUpdate = mapDtoToEntity(updateUserRequest, user);
+        User userToUpdate = mapDtoToEntity(kycFormRequest, user);
 
-        // Save to DB
         User updatedUser = userRepo.save(userToUpdate);
 
-        // Entity → DTO
-        UserResponse userResponse = mapEntityToDto(updatedUser);
-
-        return userResponse;
+        return mapEntityToDto(updatedUser);
     }
 
     @Override
@@ -188,6 +181,36 @@ public class UserServiceImpl implements UserService {
         tokenService.markTokenAsLoggedOut(phone);
     }
 
+    @Override
+    public UserResponse approveKyc(String phone) {
+        User user = userRepo.findByPhone(phone)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "user not found"
+                ));
+
+        user.setKycStatus(KycStatus.APPROVED.name());
+        user.setLevel("2");
+
+        User updatedUser = userRepo.save(user);
+
+        return mapEntityToDto(updatedUser);
+    }
+
+    @Override
+    public UserResponse rejectKyc(String phone) {
+        User user = userRepo.findByPhone(phone)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "user not found"
+                ));
+
+        user.setKycStatus(KycStatus.REJECTED.name());
+        user.setLevel("3");
+
+        User updatedUser = userRepo.save(user);
+
+        return mapEntityToDto(updatedUser);
+    }
+
     private User mapDtoToEntity(UserRequest userRequest) {
         User user = User.builder()
                 .userId(UUID.randomUUID().toString())
@@ -195,26 +218,33 @@ public class UserServiceImpl implements UserService {
                 .phone(userRequest.getPhone())
                 .pin(userRequest.getPin())
                 .nrc(userRequest.getNrc())
+                .kycStatus(KycStatus.NOT_SUBMITTED.name())
                 .createdAt(LocalDateTime.now())
                 .build();
 
         return user;
     }
 
-    private User mapDtoToEntity(UpdateUserRequest updateUserRequest, User oldUserData) {
+    private User mapDtoToEntity(KYCFormRequest kycFormRequest, User oldUserData) {
         User user = User.builder()
                 .userId(oldUserData.getUserId())
-                .name(updateUserRequest.getName())
-                .phone(updateUserRequest.getPhone())
-                .pin(oldUserData.getPin())
-                .nrc(updateUserRequest.getNrc())
-                .createdAt(LocalDateTime.now())
+                .name(kycFormRequest.getName())
+                .phone(oldUserData.getPhone())
+                .nrc(kycFormRequest.getNrc())
+                .address(kycFormRequest.getAddress())
+                .dateOfBirth(kycFormRequest.getDateOfBirth())
+                .gender(kycFormRequest.getGender())
+                .nationality(kycFormRequest.getNationality())
+                .occupation(kycFormRequest.getOccupation())
+                .level(oldUserData.getLevel())
+                .kycStatus(KycStatus.PENDING.name())
+                .createdAt(oldUserData.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .updatedBy("User")
                 .build();
 
         return user;
-    }
+    };
 
     private UserResponse mapEntityToDto(User user) {
         WalletResponse walletResponse = walletService.getWalletByPhone(user.getPhone());
@@ -226,7 +256,14 @@ public class UserServiceImpl implements UserService {
                 .name(user.getName())
                 .level(user.getLevel())
                 .phone(user.getPhone())
+                .nrc(user.getNrc())
+                .address(user.getAddress())
+                .dateOfBirth(user.getDateOfBirth())
+                .gender(user.getGender())
+                .nationality(user.getNationality())
+                .occupation(user.getOccupation())
                 .walletStatus(walletResponse.getStatus())
+                .kycStatus(user.getKycStatus())
                 .build();
 
         return userResponse;

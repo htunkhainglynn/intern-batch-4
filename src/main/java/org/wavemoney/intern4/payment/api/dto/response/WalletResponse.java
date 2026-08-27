@@ -14,4 +14,5 @@ public class WalletResponse {
      String phone;
      Double balance;
      String status;
+     String currency;
 }

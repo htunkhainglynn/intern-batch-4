@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.wavemoney.intern4.payment.api.dto.request.LoginRequest;
-import org.wavemoney.intern4.payment.api.dto.request.PinUpdateRequest;
-import org.wavemoney.intern4.payment.api.dto.request.UpdateUserRequest;
-import org.wavemoney.intern4.payment.api.dto.request.UserRequest;
+import org.wavemoney.intern4.payment.api.dto.request.*;
 import org.wavemoney.intern4.payment.api.dto.response.LoginResponse;
 import org.wavemoney.intern4.payment.api.dto.response.UserResponse;
 import org.wavemoney.intern4.payment.api.service.UserService;
@@ -43,9 +40,21 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    @PutMapping
-    public ResponseEntity<UserResponse> updateUser(@RequestBody UpdateUserRequest updateUserRequest) {
-        UserResponse userResponse = userService.updateUser(updateUserRequest);
+    @PostMapping("/kyc/{phone}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String phone, @Valid @RequestBody KYCFormRequest kycFormRequest) {
+        UserResponse userResponse = userService.updateUser(phone, kycFormRequest);
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PostMapping("/{phone}/kyc/approve")
+    public ResponseEntity<UserResponse> approveKyc(@PathVariable String phone) {
+        UserResponse userResponse = userService.approveKyc(phone);
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PostMapping("/{phone}/kyc/reject")
+    public ResponseEntity<UserResponse> rejectKyc(@PathVariable String phone) {
+        UserResponse userResponse = userService.rejectKyc(phone);
         return ResponseEntity.ok(userResponse);
     }
 

@@ -1,4 +1,4 @@
-package org.wavemoney.intern4.payment.api.dto.enums;
+package org.wavemoney.intern4.payment.api.enums;
 
 public enum TransactionStatus {
     SUCCESS,

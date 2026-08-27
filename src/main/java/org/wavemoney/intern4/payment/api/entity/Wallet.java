@@ -22,6 +22,7 @@ public class Wallet {
     private String phone;
     private Double balance;
     private String status;
+    private String currency;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;

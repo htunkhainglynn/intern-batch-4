@@ -13,7 +13,7 @@ import org.wavemoney.intern4.payment.api.service.WalletService;
 import java.util.List;
 
 @RestController
-@RequestMapping ("/api/wallet")
+@RequestMapping ("/api/wallets")
 @RequiredArgsConstructor
 public class WalletController {
 

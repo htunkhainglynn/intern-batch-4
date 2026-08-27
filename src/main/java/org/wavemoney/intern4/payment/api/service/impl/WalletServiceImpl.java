@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.wavemoney.intern4.payment.api.dto.request.WalletRequest;
 import org.wavemoney.intern4.payment.api.dto.response.WalletResponse;
 import org.wavemoney.intern4.payment.api.entity.Wallet;
+import org.wavemoney.intern4.payment.api.enums.Currency;
+import org.wavemoney.intern4.payment.api.enums.WalletStatus;
 import org.wavemoney.intern4.payment.api.repo.WalletRepository;
 import org.wavemoney.intern4.payment.api.service.WalletService;
 
@@ -79,7 +81,8 @@ public class WalletServiceImpl implements WalletService {
                 .walletId(UUID.randomUUID().toString())
                 .phone(walletRequest.getPhone())
                 .balance(0.0)
-                .status("ACTIVE")
+                .currency(Currency.MMK.name())
+                .status(WalletStatus.ACTIVE.name())
                 .build();
         return wallet;
     }
@@ -90,6 +93,7 @@ public class WalletServiceImpl implements WalletService {
                 .phone(wallet.getPhone())
                 .balance(wallet.getBalance())
                 .status(wallet.getStatus())
+                .currency(wallet.getCurrency())
                 .build();
         return walletResponse;
     }
